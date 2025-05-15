@@ -1,32 +1,32 @@
 package org.fatec.findbus.services
 
-import org.fatec.findbus.models.entities.Usuario
-import org.fatec.findbus.models.repositories.UsuarioRepository
+import org.fatec.findbus.models.entities.User
+import org.fatec.findbus.models.repositories.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UsuarioService(private val usuarioRepository: UsuarioRepository) {
+class UserService(private val userRepository: UserRepository) {
     
-    fun buscarTodos(): List<Usuario> {
-        return usuarioRepository.findAll()
+    fun findAll(): List<User> {
+        return userRepository.findAll()
     }
     
-    fun buscarPorId(id: Long): Usuario? {
-        return usuarioRepository.findById(id).orElse(null)
+    fun findById(id: Long): User? {
+        return userRepository.findById(id).orElse(null)
     }
     
-    fun buscarPorEmail(email: String): Usuario? {
-        return usuarioRepository.findByEmail(email)
-    }
-    
-    @Transactional
-    fun salvar(usuario: Usuario): Usuario {
-        return usuarioRepository.save(usuario)
+    fun findByEmail(email: String): User? {
+        return userRepository.findByEmail(email)
     }
     
     @Transactional
-    fun excluir(id: Long) {
-        usuarioRepository.deleteById(id)
+    fun save(user: User): User {
+        return userRepository.save(user)
+    }
+    
+    @Transactional
+    fun delete(id: Long) {
+        userRepository.deleteById(id)
     }
 }
