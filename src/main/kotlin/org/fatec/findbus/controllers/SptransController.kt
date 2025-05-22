@@ -37,4 +37,28 @@ class SptransController(
         val result = sptransApiClient.getLineForecastByStopId(stopId)
         return ResponseEntity.ok(result)
     }
+
+    @GetMapping("/stops/{routeId}")
+    fun getStopsByRouteId(@PathVariable routeId: String): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
+        val result = sptransApiClient.getStopsByRouteId(routeId)
+        return ResponseEntity.ok(result)
+    }
+
+    @GetMapping("/stops/{stopId}")
+    fun getStopsByStopId(@PathVariable stopId: String): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
+        val result = sptransApiClient.getStopsByStopId(stopId)
+        return ResponseEntity.ok(result)
+    }
+
+    @GetMapping("/stops/{shapeId}")
+    fun getStopsByShapeId(@PathVariable shapeId: String): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
+        val result = sptransApiClient.getStopsByShapeId(shapeId)
+        return ResponseEntity.ok(result)
+    }
+
+    @GetMapping("/stops")
+    fun getStopsByLonLat(@RequestParam lon: String, @RequestParam lat: String ): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
+        val result = sptransApiClient.getStopsByLonLat(lon, lat)
+        return ResponseEntity.ok(result)
+    }
 }
