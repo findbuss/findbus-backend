@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:bdfindbus
+    username: sa
+    password: sa
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: create # validate | update | create | create-drop
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+security:
+  config:
+    prefix: Bearer
+    key: eyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2YeyJhbGciOiJIaVqpZBr1OWB2cpWxGlReDmVpOYuYWhVgDqu2Y
+    expiration: 3600000
