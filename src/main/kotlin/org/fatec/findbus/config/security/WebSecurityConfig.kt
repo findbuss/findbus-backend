@@ -24,8 +24,10 @@ class WebSecurityConfig{
            .authorizeHttpRequests{ auth ->
                auth
                    .requestMatchers("/api/v1/sptrans/**").permitAll()
+                   .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                    .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
-                   .anyRequest().authenticated()
+                   .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
+                   .anyRequest().permitAll()
            }
            .sessionManagement{ sess -> sess
                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

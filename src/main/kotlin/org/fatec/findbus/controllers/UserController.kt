@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/Users")
+@RequestMapping("/api/v1/Users")
 class UserController(private val userService: UserService) {
 
     @GetMapping
