@@ -17,7 +17,7 @@ data class User(
     val email: String,
 
     @Column(nullable = false)
-    val password: String,
+    var password: String,
     
     @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),

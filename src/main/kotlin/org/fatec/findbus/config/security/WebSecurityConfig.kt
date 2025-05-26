@@ -26,7 +26,7 @@ class WebSecurityConfig{
                    .requestMatchers("/api/v1/sptrans/**").permitAll()
                    .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                    .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
-                   .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
+                   .requestMatchers("/api/v1/**").authenticated()
                    .anyRequest().permitAll()
            }
            .sessionManagement{ sess -> sess
@@ -47,6 +47,4 @@ class WebSecurityConfig{
             }
         }
     }
-
-
 }
