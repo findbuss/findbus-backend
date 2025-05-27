@@ -1,4 +1,4 @@
-package org.fatec.findbus.handlers
+package org.fatec.findbus.config.handlers
 
 
 import com.fasterxml.jackson.databind.ObjectMapper

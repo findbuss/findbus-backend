@@ -1,5 +1,6 @@
-package org.fatec.findbus.handlers
+package org.fatec.findbus.config.handlers
 
+import org.fatec.findbus.exceptions.AuthRequestFailedException
 import org.fatec.findbus.exceptions.AuthenticationFailedException
 import org.fatec.findbus.response.RestResponse
 import org.fatec.findbus.response.RestResponseBuilder.build
@@ -35,6 +36,16 @@ class GlobalExceptionHandler {
             GetResponseSelfLink.getSelfLink(),
             false,
             HttpStatus.FORBIDDEN
+        )
+    }
+
+    @ExceptionHandler(AuthRequestFailedException::class)
+    fun authFailed(ex: AuthRequestFailedException): ResponseEntity<RestResponse<String?>> {
+        return build(
+            ex.message,
+            GetResponseSelfLink.getSelfLink(),
+            false,
+            HttpStatus.UNAUTHORIZED
         )
     }
 
