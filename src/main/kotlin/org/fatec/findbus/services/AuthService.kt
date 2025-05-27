@@ -21,7 +21,7 @@ class AuthService(
     fun login(login: LoginDTO): SessionDTO {
         try {
             val email = login.getEmail()
-            val user: User = userRepository.findUserByEmail(email) ?: throw IllegalArgumentException("User not found")
+            val user: User = userRepository.findUserByEmail(email)
 
             if (!BCryptPasswordEncoder().matches(login.getPassword(), user.password)) {
                 throw IllegalArgumentException("Invalid credentials")
