@@ -8,14 +8,12 @@ import java.util.Date
 
 object JwtBuilder {
     const val HEADER_AUTHORIZATION = "Authorization"
-    const val ROLES_AUTHORITIES = "authorities"
 
     fun build(prefix: String, key: String, jwt: JwtObject): String {
         val token = Jwts.builder()
             .subject(jwt.subject)
             .issuedAt(jwt.issuedAt)
             .expiration(jwt.expiration)
-            .claim("email", jwt.email)
             .signWith(Keys.hmacShaKeyFor(SecurityConfig.KEY.toByteArray()))
             .compact()
 
@@ -32,7 +30,7 @@ object JwtBuilder {
         var cleanedToken = token.removePrefix(prefix).trim()
 
         val claims = Jwts.parser()
-            .setSigningKey(Keys.hmacShaKeyFor(SecurityConfig.KEY.toByteArray()))
+            .setSigningKey(Keys.hmacShaKeyFor(key.toByteArray()))
             .build()
             .parseClaimsJws(cleanedToken)
             .body
@@ -41,7 +39,6 @@ object JwtBuilder {
             subject = claims.subject,
             issuedAt = claims.issuedAt,
             expiration = claims.expiration,
-            email = claims["email"] as String
         )
     }
 }

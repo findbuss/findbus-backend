@@ -6,5 +6,4 @@ data class JwtObject(
     var subject: String? = null,
     var issuedAt: Date? = null,
     var expiration: Date? = null,
-    var email: String? = null,
 )

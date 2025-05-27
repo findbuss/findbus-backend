@@ -36,7 +36,7 @@ class AuthService(
             val jwt = JwtObject().apply {
                 issuedAt = Date(System.currentTimeMillis())
                 expiration = Date(System.currentTimeMillis() + SecurityConfig.EXPIRATION)
-                this.email = user.email
+                subject = user.id.toString()
             }
 
             return SessionDTO().apply {

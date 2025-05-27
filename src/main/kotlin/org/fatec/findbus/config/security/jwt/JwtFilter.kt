@@ -24,7 +24,11 @@ class JwtFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = request.getHeader(JwtBuilder.HEADER_AUTHORIZATION)
+        val header = request.getHeader(JwtBuilder.HEADER_AUTHORIZATION)
+        val token = if (header != null && header.startsWith(SecurityConfig.PREFIX)) {
+            header.substring(SecurityConfig.PREFIX.length)
+        } else null
+
         try {
             if (!token.isNullOrEmpty()) {
                 val tokenObject = JwtBuilder.parse(token, SecurityConfig.PREFIX, SecurityConfig.KEY)
@@ -32,6 +36,7 @@ class JwtFilter : OncePerRequestFilter() {
                 val userToken = UsernamePasswordAuthenticationToken(
                     tokenObject.subject,
                     null,
+                    emptyList()
                 )
 
                 SecurityContextHolder.getContext().authentication = userToken
@@ -48,9 +53,5 @@ class JwtFilter : OncePerRequestFilter() {
         } catch (e: SignatureException) {
             throw AuthenticationFailedException(e.message)
         }
-    }
-
-    private fun authorities(roles: List<String>): List<SimpleGrantedAuthority> {
-        return roles.map { SimpleGrantedAuthority(it) }
     }
 }
