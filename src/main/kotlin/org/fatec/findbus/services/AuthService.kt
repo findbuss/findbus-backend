@@ -46,6 +46,28 @@ class AuthService(
         } catch (e: Exception) {
             throw AuthRequestFailedException("Failed to login, " + e.message)
         }
+    }
 
+    fun validateUserToken(header: String): Long {
+        val token = if (header.startsWith(SecurityConfig.PREFIX)) {
+            header.substring(SecurityConfig.PREFIX.length)
+        } else null
+
+        try {
+            if (token.isNullOrEmpty()) {
+                throw RuntimeException("Token is missing or invalid")
+            }
+
+            val jwt = JwtBuilder.parse(token, SecurityConfig.PREFIX, SecurityConfig.KEY)
+
+            if (jwt.expiration!!.before(Date())) {
+                throw RuntimeException("Token expired")
+            }
+
+            val userId = jwt.subject!!.toLong()
+            return userId
+        } catch (e: Exception) {
+            throw AuthenticationFailedException("Authentication failed, " + e.message)
+        }
     }
 }
