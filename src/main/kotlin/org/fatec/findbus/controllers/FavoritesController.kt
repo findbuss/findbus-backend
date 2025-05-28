@@ -1,6 +1,8 @@
 package org.fatec.findbus.controllers
 
+import org.fatec.findbus.config.security.jwt.JwtBuilder
 import org.fatec.findbus.models.entities.Favorites
+import org.fatec.findbus.services.AuthService
 import org.fatec.findbus.services.FavoritesService
 import org.fatec.findbus.services.UserService
 import org.springframework.http.HttpStatus
@@ -11,53 +13,52 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/favorites")
 class FavoritesController(
     private val favoritesService: FavoritesService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val authService: AuthService
 ) {
 
-    @GetMapping("/{userId}")
-    fun getUserFavorites(@PathVariable userId: Long): ResponseEntity<List<Favorites>> {
-        val user = userService.findById(userId)
-            ?: return ResponseEntity.notFound().build()
-        
-        val favorites = favoritesService.getUserFavorites(user)
+    @GetMapping()
+    fun getUserFavorites(
+        @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String,
+    ): ResponseEntity<List<Favorites>> {
+        val userId = authService.validateUserToken(token)
+
+        val favorites = favoritesService.getUserFavorites(userId)
         return ResponseEntity.ok(favorites)
     }
 
-    @PostMapping("/{userId}")
+    @PostMapping()
     fun addToFavorites(
-        @PathVariable userId: Long,
+        @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String,
         @RequestParam lineId: String,
         @RequestParam lineName: String,
         @RequestParam shapeId: String
     ): ResponseEntity<Favorites> {
-        val user = userService.findById(userId)
-            ?: return ResponseEntity.notFound().build()
-        
-        val favorite = favoritesService.addToFavorites(user, lineId, lineName, shapeId)
+        val userId = authService.validateUserToken(token)
+
+        val favorite = favoritesService.addToFavorites(userId, lineId, lineName, shapeId)
         return ResponseEntity.status(HttpStatus.CREATED).body(favorite)
     }
 
-    @DeleteMapping("/{userId}/{lineId}")
+    @DeleteMapping("/{lineId}")
     fun removeFromFavorites(
-        @PathVariable userId: Long,
+        @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String,
         @PathVariable lineId: String
     ): ResponseEntity<Void> {
-        val user = userService.findById(userId)
-            ?: return ResponseEntity.notFound().build()
-        
-        favoritesService.removeFromFavorites(user, lineId)
+        val userId = authService.validateUserToken(token)
+
+        favoritesService.removeFromFavorites(userId, lineId)
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/{userId}/check")
+    @GetMapping("/check")
     fun isFavorite(
-        @PathVariable userId: Long,
+        @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String,
         @RequestParam lineId: String
     ): ResponseEntity<Map<String, Boolean>> {
-        val user = userService.findById(userId)
-            ?: return ResponseEntity.notFound().build()
-        
-        val isFavorite = favoritesService.isFavorite(user, lineId)
+        val userId = authService.validateUserToken(token)
+
+        val isFavorite = favoritesService.isFavorite(userId, lineId)
         return ResponseEntity.ok(mapOf("isFavorite" to isFavorite))
     }
 }

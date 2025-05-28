@@ -8,18 +8,21 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-class FavoritesService(private val favoritesRepository: FavoritesRepository) {
+class FavoritesService(
+    private val favoritesRepository: FavoritesRepository,
+    private val userService: UserService
+) {
 
-    fun getUserFavorites(user: User): List<Favorites> {
-        return favoritesRepository.findByUser(user)
+    fun getUserFavorites(userId: Long): List<Favorites> {
+        return favoritesRepository.findByUserId(userId)
     }
 
     @Transactional
-    fun addToFavorites(user: User, lineId: String, lineName: String, shapeId: String): Favorites {
-        val existingFavorite = favoritesRepository.findByUserAndLineId(user, lineId)
+    fun addToFavorites(userId: Long, lineId: String, lineName: String, shapeId: String): Favorites {
+        val existingFavorite = favoritesRepository.findByUserIdAndLineId(userId, lineId)
+        val user = userService.findById(userId)
         
         return if (existingFavorite != null) {
-            // Update existing favorite with new date
             val updatedFavorite = existingFavorite.copy(
                 updatedAt = LocalDateTime.now(),
                 lineName = lineName,
@@ -27,23 +30,22 @@ class FavoritesService(private val favoritesRepository: FavoritesRepository) {
             )
             favoritesRepository.save(updatedFavorite)
         } else {
-            // Create new favorite entry
             val newFavorite = Favorites(
                 lineId = lineId,
                 lineName = lineName,
                 shapeId = shapeId,
-                user = user
+                user = user!!
             )
             favoritesRepository.save(newFavorite)
         }
     }
 
     @Transactional
-    fun removeFromFavorites(user: User, lineId: String) {
-        favoritesRepository.deleteByUserAndLineId(user, lineId)
+    fun removeFromFavorites(userId: Long, lineId: String) {
+        favoritesRepository.deleteByUserIdAndLineId(userId, lineId)
     }
 
-    fun isFavorite(user: User, lineId: String): Boolean {
-        return favoritesRepository.findByUserAndLineId(user, lineId) != null
+    fun isFavorite(userId: Long, lineId: String): Boolean {
+        return favoritesRepository.findByUserIdAndLineId(userId, lineId) != null
     }
 }

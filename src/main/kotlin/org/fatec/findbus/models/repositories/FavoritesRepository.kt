@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface FavoritesRepository : JpaRepository<Favorites, Long> {
-    fun findByUser(user: User): List<Favorites>
-    fun findByUserAndLineId(user: User, lineId: String): Favorites?
-    fun deleteByUserAndLineId(user: User, lineId: String)
+    fun findByUserId(userId: Long): List<Favorites>
+    fun findByUserIdAndLineId(userId: Long, lineId: String): Favorites?
+    fun deleteByUserIdAndLineId(userId: Long, lineId: String)
 }
