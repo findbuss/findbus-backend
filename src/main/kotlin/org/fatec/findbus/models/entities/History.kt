@@ -9,19 +9,19 @@ data class History(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-    
+
     @Column(name = "line_id", nullable = false)
     val lineId: String,
-    
+
     @Column(name = "line_name", nullable = false)
     val lineName: String,
-    
+
     @Column(name = "shape_id", nullable = false)
     val shapeId: String,
-    
+
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
-    
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User

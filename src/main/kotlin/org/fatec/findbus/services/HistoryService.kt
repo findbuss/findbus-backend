@@ -21,7 +21,7 @@ class HistoryService(private val historyRepository: HistoryRepository) {
         return if (existingHistory != null) {
             // Update existing history with new date
             val updatedHistory = existingHistory.copy(
-                updatedAt = LocalDateTime.now(),
+                createdAt = LocalDateTime.now(),
                 lineName = lineName,
                 shapeId = shapeId
             )
