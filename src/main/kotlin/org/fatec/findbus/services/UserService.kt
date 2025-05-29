@@ -11,17 +11,8 @@ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
-    
-    fun findAll(): List<User> {
-        return userRepository.findAll()
-    }
-    
     fun findById(id: Long): User? {
         return userRepository.findById(id).orElse(null)
-    }
-    
-    fun findByEmail(email: String): User? {
-        return userRepository.findByEmail(email)
     }
     
     @Transactional

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/favorites")
 class FavoritesController(
     private val favoritesService: FavoritesService,
-    private val userService: UserService,
     private val authService: AuthService
 ) {
 
