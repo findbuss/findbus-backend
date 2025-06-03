@@ -20,6 +20,16 @@ class SptransController(
         return ResponseEntity.ok(result)
     }
 
+    @GetMapping("/lines/{routeId}/{direction}")
+    fun getLineDetailsById(
+        @RequestHeader("Authorization") token: String?,
+        @PathVariable routeId: String,
+        @PathVariable direction: Int
+    ): ResponseEntity<org.fatec.findbus.models.dto.LineDetails> {
+        val result = sptransService.getLineDetailsById(token, routeId, direction)
+        return ResponseEntity.ok(result)
+    }
+
     @GetMapping("/shapes/{shapeId}")
     fun getLineShape(@PathVariable shapeId: String): ResponseEntity<FeatureCollection> {
         val result = sptransService.getLineShape(shapeId)
