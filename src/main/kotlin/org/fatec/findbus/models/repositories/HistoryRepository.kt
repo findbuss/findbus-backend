@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface HistoryRepository : JpaRepository<History, Long> {
-    fun findByUser(user: User): List<History>
-    fun findByUserAndLineId(user: User, lineId: String): History?
-    fun deleteByUserAndLineId(user: User, lineId: String)
+    fun findByUserId(userId: Long): List<History>
+    fun findByUserIdAndLineId(userId: Long, lineId: String): History?
+    fun deleteByUserIdAndLineId(userId: Long, lineId: String)
 }

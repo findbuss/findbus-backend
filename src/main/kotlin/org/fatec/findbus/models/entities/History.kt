@@ -13,6 +13,9 @@ data class History(
     @Column(name = "line_id", nullable = false)
     val lineId: String,
 
+    @Column(name = "route_id", nullable = false)
+    val routeId: String,
+
     @Column(name = "line_name", nullable = false)
     val lineName: String,
 
