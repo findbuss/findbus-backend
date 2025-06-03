@@ -19,11 +19,15 @@ class WebSecurityConfig{
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
        http
+           .headers { headers ->
+               headers.frameOptions { it.sameOrigin() }
+           }
            .cors{}
            .csrf{ it.disable() }
            .authorizeHttpRequests{ auth ->
                auth
                    .requestMatchers("/api/v1/sptrans/**").permitAll()
+                   .requestMatchers("/h2-console/**").permitAll()
                    .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                    .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
                    .requestMatchers("/api/v1/**").authenticated()
