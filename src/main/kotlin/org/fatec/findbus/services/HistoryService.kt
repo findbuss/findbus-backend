@@ -9,10 +9,12 @@ import java.time.LocalDateTime
 @Service
 class HistoryService(
     private val historyRepository: HistoryRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val authService: AuthService
 ) {
 
-    fun getUserHistory(userId: Long): List<History> {
+    fun getUserHistory(token: String): List<History> {
+        val userId = authService.validateUserToken(token)
         return historyRepository.findByUserId(userId)
     }
 

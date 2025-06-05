@@ -1,5 +1,6 @@
 package org.fatec.findbus.models.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -25,7 +26,8 @@ data class History(
     @Column(name = "updated_at", nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     val user: User
 )
