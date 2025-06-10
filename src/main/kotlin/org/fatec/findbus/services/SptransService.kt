@@ -19,6 +19,7 @@ class SptransService(
     }
 
     fun getLineDetailsById(token: String? = null, routeId: String, direction : Int): LineDetails {
+        //TODO Caso de uso do Vendramel
         val userId = if (token != null) authService.validateUserToken(token) else null
 
         val line = this.searchLinesByTerm(routeId).firstOrNull { it.direction == direction }
