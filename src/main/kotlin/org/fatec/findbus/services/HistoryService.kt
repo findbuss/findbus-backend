@@ -26,10 +26,6 @@ class HistoryService(
         return if (existingHistory != null) {
             val updatedHistory = existingHistory.copy(
                 createdAt = LocalDateTime.now(),
-                lineId = lineId,
-                lineName = lineName,
-                shapeId = shapeId,
-                routeId = routeId,
             )
             historyRepository.save(updatedHistory)
         } else {
