@@ -1,5 +1,6 @@
 package org.fatec.findbus.services
 
+import org.fatec.findbus.models.dto.Line
 import org.fatec.findbus.models.entities.History
 import org.fatec.findbus.models.repositories.HistoryRepository
 import org.springframework.stereotype.Service
@@ -10,12 +11,29 @@ import java.time.LocalDateTime
 class HistoryService(
     private val historyRepository: HistoryRepository,
     private val userService: UserService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val lineSearchService: LineSearchService
 ) {
 
-    fun getUserHistory(token: String): List<History> {
-        val userId = authService.validateUserToken(token)
-        return historyRepository.findByUserId(userId)
+    fun getUserHistory(token: String? = null): List<Line> {
+        val userId = if (token != null) authService.validateUserToken(token) else null
+
+        if (userId == null) {
+            throw IllegalArgumentException("User ID cannot be null")
+        }
+
+        val userHistory = historyRepository.findByUserId(userId)
+        var lines: Array<Line> = emptyArray()        
+        
+        if (userHistory.isNotEmpty()) {
+            userHistory.forEach { history ->
+                lines += lineSearchService.searchLinesByTerm(history.routeId)
+                    .firstOrNull { it.lineId.toString() == history.lineId }
+                    ?: throw RuntimeException("Line with ID ${history.lineId} not found")
+            }
+        }
+
+        return lines.toList()
     }
 
     @Transactional

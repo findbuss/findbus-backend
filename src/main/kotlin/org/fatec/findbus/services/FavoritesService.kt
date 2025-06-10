@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 @Service
 class FavoritesService(
     private val favoritesRepository: FavoritesRepository,
-    private val sptransService: SptransService,
+    private val lineSearchService: LineSearchService,
     private val userService: UserService,
     private val authService: AuthService
 ) {
@@ -29,12 +29,10 @@ class FavoritesService(
 
         // Busca os favoritos do usuário
         val favorites =  favoritesRepository.findByUserId(userId)
-        var lines: Array<Line> = emptyArray()
-
-        // Se houver favoritos, busca informações das linhas correspondentes
+        var lines: Array<Line> = emptyArray()        // Se houver favoritos, busca informações das linhas correspondentes
         if (favorites.isNotEmpty()) {
             favorites.forEach { favorite ->
-                lines += sptransService.searchLinesByTerm(favorite.routeId)
+                lines += lineSearchService.searchLinesByTerm(favorite.routeId)
                     .firstOrNull{it.lineId.toString() == favorite.lineId}
                     ?: throw RuntimeException("Line with ID ${favorite.lineId} not found")
             }

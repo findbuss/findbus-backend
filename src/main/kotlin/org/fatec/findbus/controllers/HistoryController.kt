@@ -1,6 +1,7 @@
 package org.fatec.findbus.controllers
 
 import org.fatec.findbus.config.security.jwt.JwtBuilder
+import org.fatec.findbus.models.dto.Line
 import org.fatec.findbus.models.entities.History
 import org.fatec.findbus.services.HistoryService
 import org.springframework.http.ResponseEntity
@@ -17,7 +18,7 @@ class HistoryController(
     @GetMapping()
     fun getUserHistory(
         @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String
-    ): ResponseEntity<List<History>>{
+    ): ResponseEntity<List<Line>>{
         return ResponseEntity.ok(historyService.getUserHistory(token))
     }
 }

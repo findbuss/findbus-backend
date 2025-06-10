@@ -21,15 +21,19 @@ class SptransService(
 
     fun getLineDetailsById(token: String? = null, routeId: String, direction : Int): LineDetails {
         //TODO Caso de uso 2 do Vendramel
+        //Verifica se o token de autenticação é válido e extrai o userId (caso o usuário esteja autenticado)
         val userId = if (token != null) authService.validateUserToken(token) else null
 
+        // Busca a linha pelo routeId e destino
         val line = this.searchLinesByTerm(routeId).firstOrNull { it.direction == direction }
             ?: throw RuntimeException("Line with routeId $routeId not found")
 
+        // Busca os detalhes da linha, incluindo trajeto, paradas e posições dos ônibus
         val shapes = this.getLineShape(line.shapeId)
         val stops = this.getStopsByShapeId(line.shapeId)
         val busPositions = this.getBusPositionByLineId(line.lineId.toString())
 
+        //Caso usuário esteja autenticado, adiciona a linha ao histórico dele
         if (userId != null){
             historyService.addToHistory(
                 userId,
@@ -39,6 +43,8 @@ class SptransService(
                 line.shapeId
             )
         }
+
+        // Retorna os detalhes da linha
         return LineDetails(line, stops, shapes, busPositions)
     }
 
