@@ -1,6 +1,7 @@
 package org.fatec.findbus.controllers
 
 import org.fatec.findbus.config.security.jwt.JwtBuilder
+import org.fatec.findbus.models.dto.Line
 import org.fatec.findbus.models.entities.Favorites
 import org.fatec.findbus.services.AuthService
 import org.fatec.findbus.services.FavoritesService
@@ -19,10 +20,8 @@ class FavoritesController(
     @GetMapping()
     fun getUserFavorites(
         @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String,
-    ): ResponseEntity<List<Favorites>> {
-        val userId = authService.validateUserToken(token)
-
-        val favorites = favoritesService.getUserFavorites(userId)
+    ): ResponseEntity<List<Line>> {
+        val favorites = favoritesService.getUserFavorites(token)
         return ResponseEntity.ok(favorites)
     }
 
@@ -30,12 +29,11 @@ class FavoritesController(
     fun addToFavorites(
         @RequestHeader(JwtBuilder.HEADER_AUTHORIZATION) token: String,
         @RequestParam lineId: String,
+        @RequestParam routeId: String,
         @RequestParam lineName: String,
         @RequestParam shapeId: String
     ): ResponseEntity<Favorites> {
-        val userId = authService.validateUserToken(token)
-
-        val favorite = favoritesService.addToFavorites(userId, lineId, lineName, shapeId)
+        val favorite = favoritesService.addToFavorites(token, routeId , lineId, lineName, shapeId)
         return ResponseEntity.status(HttpStatus.CREATED).body(favorite)
     }
 
