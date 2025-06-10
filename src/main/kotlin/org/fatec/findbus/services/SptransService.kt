@@ -6,6 +6,7 @@ import org.fatec.findbus.models.dto.LineDetails
 import org.fatec.findbus.models.dto.position.VehiclesResponse
 import org.fatec.findbus.models.dto.shapes.FeatureCollection
 import org.fatec.findbus.models.dto.stops.StopResponse
+import org.fatec.findbus.utils.LineMapper
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +20,7 @@ class SptransService(
     }
 
     fun getLineDetailsById(token: String? = null, routeId: String, direction : Int): LineDetails {
-        //TODO Caso de uso do Vendramel
+        //TODO Caso de uso 2 do Vendramel
         val userId = if (token != null) authService.validateUserToken(token) else null
 
         val line = this.searchLinesByTerm(routeId).firstOrNull { it.direction == direction }
@@ -34,7 +35,7 @@ class SptransService(
                 userId,
                 line.lineId.toString(),
                 line.gtfsData.route_id,
-                getTerminalByDirection(line, direction),
+                LineMapper.getTerminalByDirection(line, direction),
                 line.shapeId
             )
         }
@@ -67,14 +68,6 @@ class SptransService(
 
     fun getStopsByStopId(stopId: String): org.fatec.findbus.models.dto.stops.FeatureCollection {
         return apiClient.getStopsByStopId(stopId)
-    }
-
-    private fun getTerminalByDirection(line: Line, direction: Int): String {
-        return when (direction) {
-            1 -> line.mainTerminal
-            2 -> line.secondaryTerminal
-            else -> throw IllegalArgumentException("Direção inválida: $direction")
-        }
     }
 }
 
