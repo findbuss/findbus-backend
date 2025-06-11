@@ -27,18 +27,30 @@ object JwtBuilder {
         SignatureException::class
     )
     fun parse(token: String, prefix: String, key: String): JwtObject {
-        var cleanedToken = token.removePrefix(prefix).trim()
+        try {
+            var cleanedToken = token.removePrefix(prefix).trim()
 
-        val claims = Jwts.parser()
-            .setSigningKey(Keys.hmacShaKeyFor(key.toByteArray()))
-            .build()
-            .parseClaimsJws(cleanedToken)
-            .body
+            val claims = Jwts.parser()
+                .setSigningKey(Keys.hmacShaKeyFor(key.toByteArray()))
+                .build()
+                .parseClaimsJws(cleanedToken)
+                .body
 
-        return JwtObject(
-            subject = claims.subject,
-            issuedAt = claims.issuedAt,
-            expiration = claims.expiration,
-        )
+            return JwtObject(
+                subject = claims.subject,
+                issuedAt = claims.issuedAt,
+                expiration = claims.expiration,
+            )
+        } catch (ex: ExpiredJwtException) {
+            throw org.fatec.findbus.exceptions.JwtValidationException("Token expirado", ex)
+        } catch (ex: UnsupportedJwtException) {
+            throw org.fatec.findbus.exceptions.JwtValidationException("Token não suportado", ex)
+        } catch (ex: MalformedJwtException) {
+            throw org.fatec.findbus.exceptions.JwtValidationException("Token mal formatado", ex)
+        } catch (ex: SignatureException) {
+            throw org.fatec.findbus.exceptions.JwtValidationException("Assinatura de token inválida", ex)
+        } catch (ex: Exception) {
+            throw org.fatec.findbus.exceptions.JwtValidationException("Erro ao processar token", ex)
+        }
     }
 }

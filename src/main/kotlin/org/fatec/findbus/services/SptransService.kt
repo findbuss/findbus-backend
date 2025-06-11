@@ -20,13 +20,12 @@ class SptransService(
     }
 
     fun getLineDetailsById(token: String? = null, routeId: String, direction : Int): LineDetails {
-        //TODO Caso de uso 2 do Vendramel
         //Verifica se o token de autenticação é válido e extrai o userId (caso o usuário esteja autenticado)
         val userId = if (token != null) authService.validateUserToken(token) else null
 
         // Busca a linha pelo routeId e destino
         val line = this.searchLinesByTerm(routeId).firstOrNull { it.direction == direction }
-            ?: throw RuntimeException("Line with routeId $routeId not found")
+            ?: throw org.fatec.findbus.exceptions.LineNotFoundException("Linha com routeId $routeId não encontrada")
 
         // Busca os detalhes da linha, incluindo trajeto, paradas e posições dos ônibus
         val shapes = this.getLineShape(line.shapeId)
@@ -35,13 +34,19 @@ class SptransService(
 
         //Caso usuário esteja autenticado, adiciona a linha ao histórico dele
         if (userId != null){
-            historyService.addToHistory(
-                userId,
-                line.lineId.toString(),
-                line.gtfsData.route_id,
-                LineMapper.getTerminalByDirection(line, direction),
-                line.shapeId
-            )
+            try {
+                historyService.addToHistory(
+                    userId,
+                    line.lineId.toString(),
+                    line.gtfsData.route_id,
+                    LineMapper.getTerminalByDirection(line, direction),
+                    line.shapeId
+                )
+            } catch (ex: Exception) {
+                // Log erro mas não falha a operação principal
+                org.slf4j.LoggerFactory.getLogger(SptransService::class.java)
+                    .error("Erro ao adicionar ao histórico: ${ex.message}", ex)
+            }
         }
 
         // Retorna os detalhes da linha

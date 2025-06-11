@@ -44,14 +44,18 @@ class JwtFilter : OncePerRequestFilter() {
                 SecurityContextHolder.clearContext()
             }
             filterChain.doFilter(request, response)
-        } catch (e: ExpiredJwtException) {
-            throw AuthenticationFailedException(e.message)
-        } catch (e: UnsupportedJwtException) {
-            throw AuthenticationFailedException(e.message)
-        } catch (e: MalformedJwtException) {
-            throw AuthenticationFailedException(e.message)
-        } catch (e: SignatureException) {
-            throw AuthenticationFailedException(e.message)
+        } catch (e: org.fatec.findbus.exceptions.JwtValidationException) {
+            // Trate o erro sem lançar uma nova exceção para evitar quebrar o filtro
+            response.contentType = "application/json"
+            response.status = HttpStatus.UNAUTHORIZED.value()
+            response.writer.write("{\"timestamp\":\"${java.util.Date()}\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"${e.message}\",\"path\":\"${request.requestURI}\"}")
+            return
+        } catch (e: Exception) {
+            // Trate outras exceções genéricas
+            response.contentType = "application/json"
+            response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+            response.writer.write("{\"timestamp\":\"${java.util.Date()}\",\"status\":500,\"error\":\"Internal Server Error\",\"message\":\"Erro no processamento da requisição\",\"path\":\"${request.requestURI}\"}")
+            return
         }
     }
 }

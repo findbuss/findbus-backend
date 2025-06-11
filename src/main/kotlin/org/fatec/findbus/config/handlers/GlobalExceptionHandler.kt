@@ -1,7 +1,10 @@
 package org.fatec.findbus.config.handlers
 
-import org.fatec.findbus.exceptions.AuthRequestFailedException
-import org.fatec.findbus.exceptions.AuthenticationFailedException
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.SignatureException
+import io.jsonwebtoken.UnsupportedJwtException
+import org.fatec.findbus.exceptions.*
 import org.fatec.findbus.response.RestResponse
 import org.fatec.findbus.response.RestResponseBuilder.build
 import org.fatec.findbus.utils.GetResponseSelfLink
@@ -77,6 +80,51 @@ class GlobalExceptionHandler {
             GetResponseSelfLink.getSelfLink(),
             false,
             HttpStatus.NOT_FOUND
+        )
+    }
+
+    @ExceptionHandler(JwtValidationException::class)
+    fun handleJwtValidationException(ex: JwtValidationException): ResponseEntity<RestResponse<String?>> {
+        log.error("JWT validation error: ${ex.message}", ex)
+        return build(
+            "Token de autenticação inválido ou expirado: ${ex.message}",
+            GetResponseSelfLink.getSelfLink(),
+            false,
+            HttpStatus.UNAUTHORIZED
+        )
+    }
+
+    @ExceptionHandler(value = [ExpiredJwtException::class, UnsupportedJwtException::class, 
+                              MalformedJwtException::class, SignatureException::class])
+    fun handleJwtExceptions(ex: Exception): ResponseEntity<RestResponse<String?>> {
+        log.error("JWT error: ${ex.message}", ex)
+        return build(
+            "Token de autenticação inválido ou expirado",
+            GetResponseSelfLink.getSelfLink(),
+            false,
+            HttpStatus.UNAUTHORIZED
+        )
+    }
+
+    @ExceptionHandler(LineNotFoundException::class)
+    fun handleLineNotFoundException(ex: LineNotFoundException): ResponseEntity<RestResponse<String?>> {
+        log.error("Line not found: ${ex.message}", ex)
+        return build(
+            ex.message,
+            GetResponseSelfLink.getSelfLink(),
+            false,
+            HttpStatus.NOT_FOUND
+        )
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<RestResponse<String?>> {
+        log.error("Invalid argument: ${ex.message}", ex)
+        return build(
+            ex.message,
+            GetResponseSelfLink.getSelfLink(),
+            false,
+            HttpStatus.BAD_REQUEST
         )
     }
 

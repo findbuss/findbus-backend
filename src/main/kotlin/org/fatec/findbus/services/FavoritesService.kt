@@ -18,13 +18,12 @@ class FavoritesService(
 ) {
 
     fun getUserFavorites(token: String? = null): List<Line> {
-        //TODO Caso de uso 1 do Vendramel
         // Extrai o userID do token de autenticação
         val userId = if (token != null) authService.validateUserToken(token) else null
 
         // Se não houver ID, gerar uma exceção
         if (userId == null) {
-            throw IllegalArgumentException("User ID cannot be null")
+            throw IllegalArgumentException("Identificação do usuário não pode ser nula")
         }
 
         // Busca os favoritos do usuário
@@ -34,7 +33,7 @@ class FavoritesService(
             favorites.forEach { favorite ->
                 lines += lineSearchService.searchLinesByTerm(favorite.routeId)
                     .firstOrNull{it.lineId.toString() == favorite.lineId}
-                    ?: throw RuntimeException("Line with ID ${favorite.lineId} not found")
+                    ?: throw org.fatec.findbus.exceptions.LineNotFoundException("Linha com ID ${favorite.lineId} não encontrada")
             }
         }
 
@@ -46,12 +45,12 @@ class FavoritesService(
         val userId = if (token != null) authService.validateUserToken(token) else null
 
         if (userId == null) {
-            throw IllegalArgumentException("User ID cannot be null")
+            throw IllegalArgumentException("Identificação do usuário não pode ser nula")
         }
 
         val existingFavorite = favoritesRepository.findByUserIdAndLineId(userId, lineId)
-        val user = userService.findById(userId)
-        
+        val user = userService.findById(userId) ?: throw IllegalArgumentException("Usuário não encontrado")
+
         return if (existingFavorite != null) {
             val updatedFavorite = existingFavorite.copy(
                 updatedAt = LocalDateTime.now(),
@@ -63,7 +62,7 @@ class FavoritesService(
                 lineName = lineName,
                 shapeId = shapeId,
                 routeId = routeId,
-                user = user!!
+                user = user
             )
             favoritesRepository.save(newFavorite)
         }

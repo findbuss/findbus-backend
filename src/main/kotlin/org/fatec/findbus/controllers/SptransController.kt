@@ -22,12 +22,18 @@ class SptransController(
 
     @GetMapping("/lines/{routeId}/{direction}")
     fun getLineDetailsById(
-        @RequestHeader("Authorization") token: String?,
+        @RequestHeader("Authorization", required = false) token: String?,
         @PathVariable routeId: String,
         @PathVariable direction: Int
     ): ResponseEntity<org.fatec.findbus.models.dto.LineDetails> {
-        val result = sptransService.getLineDetailsById(token, routeId, direction)
-        return ResponseEntity.ok(result)
+        try {
+            val result = sptransService.getLineDetailsById(token, routeId, direction)
+            return ResponseEntity.ok(result)
+        } catch (e: org.fatec.findbus.exceptions.JwtValidationException) {
+            // Se o token expirou, continuar sem o token
+            val result = sptransService.getLineDetailsById(null, routeId, direction)
+            return ResponseEntity.ok(result)
+        }
     }
 
     @GetMapping("/shapes/{shapeId}")

@@ -36,6 +36,7 @@ class WebSecurityConfig{
            .sessionManagement{ sess -> sess
                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
            }
+           .addFilterBefore(org.fatec.findbus.config.RestExceptionHandler(), org.springframework.web.filter.CorsFilter::class.java)
            .addFilterAfter(JwtFilter(), UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
