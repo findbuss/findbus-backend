@@ -1,0 +1,38 @@
+services:
+  server:
+    container_name: tst-bus-server
+    image: douglasdans/bus-server:latest
+    command: yarn start
+    ports:
+      - 8888:8888
+    networks:
+      - bus-network
+
+  api:
+    container_name: bus-api
+    image: douglasdans/bus-api:latest
+    depends_on:
+      - server
+    command: yarn start
+    ports:
+      - 5000:5000
+    networks:
+      - bus-network
+    env_file:
+      - .env
+
+  backend:
+    container_name: findbus-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - 8080:8080
+    networks:
+      - bus-network
+
+networks:
+  bus-network:
+    driver: bridge
