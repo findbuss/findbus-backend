@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class SptransApiClient(builder: RestTemplateBuilder) {
     private val restTemplate: RestTemplate = builder.build()
-    private val apiUrl = "http://localhost:5000"
+    private val apiUrl = "http://172.18.0.3:5000"
 
     fun searchLinesByTerm(term: String): Array<Line> {
         val url = "$apiUrl/lines/$term"
