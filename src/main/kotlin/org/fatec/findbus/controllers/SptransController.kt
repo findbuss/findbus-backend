@@ -14,17 +14,17 @@ class SptransController(
     private val sptransService: SptransService
 ) {
 
-    @GetMapping("/lines/{term}")
-    fun searchLineByTerm(@PathVariable term: String): ResponseEntity<List<Line>> {
+    @GetMapping("/lines/search")
+    fun searchLineByTerm(@RequestParam term: String): ResponseEntity<List<Line>> {
         val result = sptransService.searchLinesByTerm(term).toList()
         return ResponseEntity.ok(result)
     }
 
-    @GetMapping("/lines/{routeId}/{direction}")
+    @GetMapping("/lines/details")
     fun getLineDetailsById(
         @RequestHeader("Authorization", required = false) token: String?,
-        @PathVariable routeId: String,
-        @PathVariable direction: Int
+        @RequestParam routeId: String,
+        @RequestParam direction: Int
     ): ResponseEntity<org.fatec.findbus.models.dto.LineDetails> {
         try {
             val result = sptransService.getLineDetailsById(token, routeId, direction)
@@ -36,45 +36,45 @@ class SptransController(
         }
     }
 
-    @GetMapping("/shapes/{shapeId}")
-    fun getLineShape(@PathVariable shapeId: String): ResponseEntity<FeatureCollection> {
+    @GetMapping("/shapes")
+    fun getLineShape(@RequestParam shapeId: String): ResponseEntity<FeatureCollection> {
         val result = sptransService.getLineShape(shapeId)
         return ResponseEntity.ok(result)
     }
 
-    @GetMapping("/position/{lineId}")
-    fun getBusPositionByLineId(@PathVariable lineId: String): ResponseEntity<VehiclesResponse> {
-        val result = sptransService.getBusPositionByLineId(lineId)
-        return ResponseEntity.ok(result)
-    }
-
-    @GetMapping("/position/arrival/{stopId}")
-    fun getLineForecastByStopId(@PathVariable stopId: String): ResponseEntity<StopResponse> {
-        val result = sptransService.getLineForecastByStopId(stopId)
-        return ResponseEntity.ok(result)
-    }
-
-    @GetMapping("/stops/{routeId}")
-    fun getStopsByRouteId(@PathVariable routeId: String): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
-        val result = sptransService.getStopsByRouteId(routeId)
-        return ResponseEntity.ok(result)
-    }
-
-    @GetMapping("/stops/{stopId}")
-    fun getStopsByStopId(@PathVariable stopId: String): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
-        val result = sptransService.getStopsByStopId(stopId)
-        return ResponseEntity.ok(result)
-    }
-
-    @GetMapping("/stops/{shapeId}")
-    fun getStopsByShapeId(@PathVariable shapeId: String): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
-        val result = sptransService.getStopsByShapeId(shapeId)
-        return ResponseEntity.ok(result)
+    @GetMapping("/position")
+    fun getBusPosition(
+        @RequestParam(required = false) lineId: String?,
+        @RequestParam(required = false) stopId: String?
+    ): ResponseEntity<Any> {
+        return when {
+            lineId != null -> {
+                val result = sptransService.getBusPositionByLineId(lineId)
+                ResponseEntity.ok(result)
+            }
+            stopId != null -> {
+                val result = sptransService.getLineForecastByStopId(stopId)
+                ResponseEntity.ok(result)
+            }
+            else -> throw IllegalArgumentException("Either lineId or stopId parameter must be provided")
+        }
     }
 
     @GetMapping("/stops")
-    fun getStopsByLonLat(@RequestParam lon: String, @RequestParam lat: String ): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
-        val result = sptransService.getStopsByLonLat(lon, lat)
+    fun getStops(
+        @RequestParam(required = false) routeId: String?,
+        @RequestParam(required = false) stopId: String?,
+        @RequestParam(required = false) shapeId: String?,
+        @RequestParam(required = false) lon: String?,
+        @RequestParam(required = false) lat: String?
+    ): ResponseEntity<org.fatec.findbus.models.dto.stops.FeatureCollection> {
+        val result = when {
+            routeId != null -> sptransService.getStopsByRouteId(routeId)
+            stopId != null -> sptransService.getStopsByStopId(stopId)
+            shapeId != null -> sptransService.getStopsByShapeId(shapeId)
+            lon != null && lat != null -> sptransService.getStopsByLonLat(lon, lat)
+            else -> throw IllegalArgumentException("At least one parameter must be provided: routeId, stopId, shapeId, or (lon and lat)")
+        }
         return ResponseEntity.ok(result)
     }
 }
